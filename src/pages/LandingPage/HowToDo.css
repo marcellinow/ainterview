@@ -1,0 +1,26 @@
+.how-to-do {
+  background-color: #1f1c35;
+  color: #fff6e9;
+  /* padding: 20px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 252px;
+  width: 100vw;
+  text-align: center;
+  flex-direction: column;
+}
+
+.how-to-do h2 {
+  margin-bottom: 10px;
+  font-size: 30px;
+  color: #fff6e9;
+  /* font-weight: bold; */
+}
+
+.how-to-do ol {
+  text-align: left;
+  list-style-position: inside;
+  font-size: 20px;
+  line-height: 1.6;
+}

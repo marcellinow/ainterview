@@ -1,0 +1,75 @@
+.Features {
+  width: 100vw;
+  height: 230vh;
+}
+
+.Features-Container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff6e9;
+  position: relative;
+}
+
+.Quotes-Section {
+  height: 15%;
+  width: 90%;
+  border-bottom: 3px solid #8f898f;
+  /* background-color: white; */
+}
+.Features1 {
+  height: 35%;
+  width: 90%;
+  border-bottom: 3px solid #8f898f;
+  /* background-color: blue; */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.Features1-Left {
+  height: 50%;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+}
+.Features1-Right {
+  height: 80%;
+  width: 65%;
+  display: flex;
+  flex-direction: column;
+  background-color: grey;
+  text-align: left;
+  justify-content: flex-end;
+}
+.Features1-Right-Float {
+  height: 30vh;
+  width: 70vw;
+  right: -35px;
+  top: 16%;
+  position: absolute;
+  display: flex;
+  background-color: #4335a7;
+  border-radius: 10px;
+}
+
+.Features2 {
+  height: 35%;
+  width: 90%;
+  border-bottom: 3px solid #8f898f;
+  /* background-color: yellow; */
+}
+
+.Features-Start {
+  height: 15%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

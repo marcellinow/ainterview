@@ -1,0 +1,53 @@
+.home-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #fff6e9;
+  text-align: center;
+  flex-direction: column;
+}
+.home-title {
+  font-size: 50px;
+  max-width: 849px;
+  line-height: 1.4;
+  margin: 0;
+  color: #1f1c35;
+}
+
+.options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.option-title {
+  font-weight: bold;
+  font-size: 30px;
+  margin-bottom: 10px;
+  color: #1f1c35;
+}
+
+.option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  border: #1f1c35 2px solid;
+  border-radius: 15px;
+  width: 350px;
+  height: 350px;
+  font-size: 20px;
+}
+
+.resources-icon {
+  width: 80px;
+  height: 85px;
+}
+.option:hover {
+  background-color: white;
+  font-size: 22px;
+}
