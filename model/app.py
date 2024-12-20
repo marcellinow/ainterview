@@ -109,7 +109,5 @@ async def process_cv(cv_data: CVData):
         print(f"Error: {e}")  # Log the actual error
         raise HTTPException(status_code=500, detail=str(e))
 
-# Main entry point for the FastAPI app
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+from mangum import Mangum
+handler = Mangum(app)
