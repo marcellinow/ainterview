@@ -131,7 +131,7 @@ def generate_word_cloud(data, selected_value="ALL"):
 
     plt.figure(figsize=(8, 8))
     x, y = np.ogrid[:300, :300]
-    mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** 2
+    mask = (x - 150) ** 2 + (y - 150) ** 2 > 130 ** (2)
     mask = 255 * mask.astype(int)
 
     wc = WordCloud(
