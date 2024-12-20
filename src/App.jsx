@@ -11,7 +11,7 @@ import EndQuestion from "./pages/Interview/Questions/EndQuestion";
 
 function App() {
   return (
-    <Router>
+    <Router basename="/ainterview">
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/SignUp" element={<SignUp />} />
