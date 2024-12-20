@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+requests
+pydantic
+PyMuPDF
+supabase
+spacy
+mangum
