@@ -7,6 +7,7 @@ import fitz  # PyMuPDF
 import os
 from supabase import create_client, Client
 import spacy
+from datetime import datetime
 
 # FastAPI instance
 app = FastAPI()
@@ -23,6 +24,12 @@ app.add_middleware(
 class CVData(BaseModel):
     user_id: str
     public_url: str
+
+# Define input model for Response Data
+class ResponseData(BaseModel):
+    user_id: str
+    question_id: int
+    response: str
 
 # Supabase URL and Key (make sure to set environment variables)
 url: str = os.environ.get("SUPABASE_URL", "https://ffqmshntftrbvolsudtt.supabase.co")
@@ -66,8 +73,6 @@ def generate_questions(text: str):
     nlp = spacy.load("en_core_web_lg")
     sent = nlp(text)
     questions = []
-    questions.append("Tell me about your childhood?")
-    questions.append("What is your the most memorable thing?")
 
     for ent in sent.ents:
         if ent.label_ == "PERSON":
@@ -75,10 +80,13 @@ def generate_questions(text: str):
         elif ent.label_ == "ORG":
             questions.append(f"What is your experience with {ent.text}?")
         elif ent.label_ == "GPE":
-            questions.append(f"Why did you live or work in {ent.text}?")
+            questions.append(f"Where did you live or work in {ent.text}?")
         elif ent.label_ == "SKILL":
             questions.append(f"How did you learn {ent.text}?")
 
+    questions.append("Tell me about your childhood?")
+    questions.append("What is your most recent work experience?")
+    questions.append("Where did you study?")
 
     return questions
 
@@ -105,6 +113,26 @@ async def process_cv(cv_data: CVData):
         print(f"Questions generated: {questions}")
 
         return {"message": "Model processed successfully", "questions": questions}
+    except Exception as e:
+        print(f"Error: {e}")  # Log the actual error
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Endpoint to save user response
+@app.post("/save_response/")
+async def save_response(response_data: ResponseData):
+    try:
+        # Insert response into Supabase
+        response = supabase.table('responses').insert({
+            'user_id': response_data.user_id,
+            'question_id': response_data.question_id,
+            'response': response_data.response,
+            'timestamp': datetime.timestamp()
+        }).execute()
+
+        if response.error:
+            raise HTTPException(status_code=500, detail=response.error.message)
+
+        return {"message": "Response saved successfully"}
     except Exception as e:
         print(f"Error: {e}")  # Log the actual error
         raise HTTPException(status_code=500, detail=str(e))
