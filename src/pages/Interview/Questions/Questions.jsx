@@ -67,6 +67,28 @@ export default function Questions() {
     fetchQuestions();
   }, [id, location.state]);
 
+  const saveResponse = async () => {
+    const user_id = location.state?.user_id || localStorage.getItem("user_id");
+
+    try {
+      const response = await fetch("http://localhost:8000/save_response/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user_id,
+          responses: response,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to save responses");
+      }
+      console.log("Responses saved succesfully");
+    } catch (error) {
+      console.log("Error saving responses:", error);
+    }
+  };
   const handleNext = () => {
     const nextId = parseInt(id, 10) + 1;
     if (nextId <= questions.length) {
@@ -77,7 +99,8 @@ export default function Questions() {
         },
       });
     } else {
-      navigate("/EndQuestion");
+      // navigate("/EndQuestion");
+      handleFinish();
     }
   };
 
@@ -91,6 +114,10 @@ export default function Questions() {
         },
       });
     }
+  };
+  const handleFinish = async () => {
+    await saveResponse();
+    navigate("/EndQuestion");
   };
 
   useEffect(() => {

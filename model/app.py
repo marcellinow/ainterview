@@ -24,6 +24,12 @@ class CVData(BaseModel):
     user_id: str
     public_url: str
 
+class CVResponse(BaseModel):
+    user_id: str
+    question_id: int
+    question: str
+    respones: str
+
 # Supabase URL and Key (make sure to set environment variables)
 url: str = os.environ.get("SUPABASE_URL", "https://ffqmshntftrbvolsudtt.supabase.co")
 key: str = os.environ.get("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmcW1zaG50ZnRyYnZvbHN1ZHR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ2MDM3ODgsImV4cCI6MjA1MDE3OTc4OH0.29Slsj3k-osTaU3A8SwSQw8Suho0rJ-TXZjISum_Pjc")
@@ -97,17 +103,43 @@ async def process_cv(cv_data: CVData):
         # Step 2: Process CV file and extract text
         print("Processing CV file...")
         cv_text = process_cv_file(file_url)
-        print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
+        # print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
 
         # Step 3: Generate questions
         print("Generating questions...")
         questions = generate_questions(cv_text)
-        print(f"Questions generated: {questions}")
+        # print(f"Questions generated: {questions}")
 
         return {"message": "Model processed successfully", "questions": questions}
     except Exception as e:
         print(f"Error: {e}")  # Log the actual error
         raise HTTPException(status_code=500, detail=str(e))
 
-from mangum import Mangum
-handler = Mangum(app)
+@app.post("/save_response/")
+async def save_response(response: CVResponse):
+    try:
+        print(f"Received user_id: {response.user_id}")
+        print(f"Received question_id: {response.question_id}")
+        print(f"Received question: {response.question}")
+        print(f"Received response: {response.respones}")
+
+        # Save response to Supabase
+        response_data = {
+            "user_id": response.user_id,
+            "question_id": response.question_id,
+            "question": response.question,
+            "response": response.respones
+        }
+        response = supabase.table('cv_responses').insert(response_data).execute()
+        print(f"Supabase response: {response}")
+
+        return {"message": "Response saved successfully"}
+    except Exception as e:
+        print(f"Error: {e}")
+# from mangum import Mangum
+# handler = Mangum(app)
+
+# Run the FastAPI app with Uvicorn
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host='127.0.0.1',port=8000)

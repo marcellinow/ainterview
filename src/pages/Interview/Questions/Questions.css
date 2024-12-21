@@ -66,4 +66,6 @@
 
 .text-center {
   text-align: center;
+  background-color: antiquewhite;
+  background-size: cover;
 }
