@@ -4,6 +4,7 @@ import SignIn from "./pages/AuthenticationPage/SignIn";
 import SignUp from "./pages/AuthenticationPage/SignUp";
 import Home from "./pages/Home/Home";
 import Interview from "./pages/Interview/Interview";
+import ChoosenCareer from "./pages/Interview/ChoosenCareer";
 import StartQuestion from "./pages/Interview/Questions/StartQuestion";
 import QuestionPage from "./pages/Interview/Questions/Questions";
 import EndQuestion from "./pages/Interview/Questions/EndQuestion";
@@ -17,6 +18,7 @@ function App() {
         <Route path="/SignIn" element={<SignIn />} />
         <Route path="/Home" element={<Home />} />
         <Route path="/Interview" element={<Interview />} />
+        <Route path="/ChoosenCareer" element={<ChoosenCareer />} />
         <Route path="Questions/StartQuestion" element={<StartQuestion />} />
         <Route path="Questions/Questions/:id" element={<QuestionPage />} />
         <Route path="Questions/EndQuestion" element={<EndQuestion />} />

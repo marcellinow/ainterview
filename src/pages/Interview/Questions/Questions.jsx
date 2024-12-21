@@ -117,7 +117,7 @@ export default function Questions() {
   };
   const handleFinish = async () => {
     await saveResponse();
-    navigate("/EndQuestion");
+    navigate("/Questions/EndQuestion");
   };
 
   useEffect(() => {

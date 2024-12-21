@@ -11,6 +11,7 @@ const Interview = () => {
   const [dragActive, setDragActive] = useState(false);
   const navigate = useNavigate();
 
+  // Drag-and-drop functionality
   const handleDrag = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -21,6 +22,7 @@ const Interview = () => {
     }
   }, []);
 
+  // Validate file type and size
   const validateFile = (file) => {
     const validTypes = [
       "application/pdf",
@@ -38,6 +40,7 @@ const Interview = () => {
     return true;
   };
 
+  // Handle file drop
   const handleDrop = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,6 +55,7 @@ const Interview = () => {
     }
   }, []);
 
+  // Handle file input change
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && validateFile(selectedFile)) {
@@ -60,6 +64,7 @@ const Interview = () => {
     }
   };
 
+  // Upload file to Supabase and insert into the database
   const handleUpload = async () => {
     if (!file) {
       setError("Please select a file first.");
@@ -80,8 +85,8 @@ const Interview = () => {
         throw new Error("User is not authenticated. Please sign in.");
       }
 
-      const userId = user.id;
-      const fileName = `${Date.now()}_${file.name}`;
+      const userId = user.id; // Authenticated user ID
+      const fileName = `${Date.now()}_${file.name}`; // Unique file name
 
       // Upload the file to Supabase storage
       const { data, error: uploadError } = await supabase.storage
@@ -107,23 +112,26 @@ const Interview = () => {
       const publicUrl = publicUrlData.publicUrl;
 
       // Insert the file link into the database
-      const { error: insertError } = await supabase
+      const { data: insertedData, error: insertError } = await supabase
         .from("cv_upload")
         .insert([
           { user_id: userId, cv_link: publicUrl, created_at: new Date() },
-        ]);
+        ])
+        .select(); // Return the inserted row for further use
 
       if (insertError) {
         throw insertError;
       }
 
+      const cvId = insertedData[0].cv_id; // Get the inserted `cv_id`
+      console.log("CV ID:", cvId);
+
       setUploadComplete(true);
 
-      navigate("/Questions/StartQuestion", {
-        state: { user_id: userId, public_url: publicUrl },
+      // Navigate to the ChoosenCareer page and pass `user_id` and `cv_id`
+      navigate("/ChoosenCareer", {
+        state: { user_id: userId, cv_id: cvId },
       });
-      localStorage.setItem("user_id", userId);
-      localStorage.setItem("public_url", publicUrl);
     } catch (error) {
       console.error("Upload error: ", error);
       setError(error.message || "Failed to upload file. Please try again.");
@@ -137,7 +145,7 @@ const Interview = () => {
       <div className="interview-card">
         <h1 className="interview-title">Interview</h1>
         <p className="interview-description">
-          Upload your CV to initialize the interview.
+          Upload your CV to initialize the interview process.
         </p>
 
         <div

@@ -30,6 +30,11 @@ class CVResponse(BaseModel):
     question: str
     respones: str
 
+class CareerData(BaseModel):
+    user_id: str
+    career_path: str
+    created_at: str
+
 # Supabase URL and Key (make sure to set environment variables)
 url: str = os.environ.get("SUPABASE_URL", "https://ffqmshntftrbvolsudtt.supabase.co")
 key: str = os.environ.get("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmcW1zaG50ZnRyYnZvbHN1ZHR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ2MDM3ODgsImV4cCI6MjA1MDE3OTc4OH0.29Slsj3k-osTaU3A8SwSQw8Suho0rJ-TXZjISum_Pjc")
@@ -89,20 +94,31 @@ def generate_questions(text: str):
     return questions
 
 # Endpoint to process CV and generate questions
+# Endpoint to process CV and generate questions
 @app.post("/process_cv/")
 async def process_cv(cv_data: CVData):
     try:
         print(f"Received user_id: {cv_data.user_id}")
         print(f"Received public_url: {cv_data.public_url}")
 
-        # Step 1: Fetch CV URL (if needed)
-        print("Fetching file URL...")
-        file_url = cv_data.public_url
-        print(f"File URL fetched: {file_url}")
+        # Step 1: Check if the CV already exists for the user
+        existing_cv = supabase.table('cv_upload').select('cv_link').eq('user_id', cv_data.user_id).execute()
+        print(f"test {existing_cv.data}\n")
+        if existing_cv.data:
+            # Update the existing CV link
+            print("apdet")
+            response = supabase.table('cv_upload').update({'cv_link': cv_data.public_url}).eq('user_id', cv_data.user_id).execute()
+            print(f"Updated CV link for user_id: {cv_data.user_id}")
+        else:
+            print("insert")
+            # Insert a new CV link
+            response = supabase.table('cv_upload').insert({'user_id': cv_data.user_id, 'cv_link': cv_data.public_url}).execute()
+            print(f"Inserted new CV link for user_id: {cv_data.user_id}")
+            
 
         # Step 2: Process CV file and extract text
         print("Processing CV file...")
-        cv_text = process_cv_file(file_url)
+        cv_text = process_cv_file(cv_data.public_url)
         # print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
 
         # Step 3: Generate questions
@@ -136,6 +152,27 @@ async def save_response(response: CVResponse):
         return {"message": "Response saved successfully"}
     except Exception as e:
         print(f"Error: {e}")
+
+@app.post("/save_career/")
+async def save_career(career_data:CareerData):
+        try:
+            print(f"Received user_id: {career_data.user_id}")
+            print(f"Received career_path: {career_data.career_path}")
+            print(f"Received created_at: {career_data.created_at}")
+    
+            # Save career data to Supabase
+            career_data = {
+                "user_id": career_data.user_id,
+                "career_path": career_data.career_path,
+                "created_at": career_data.created_at
+            }
+            response = supabase.table('user_career').insert(career_data).execute()
+            print(f"Supabase response: {response}")
+    
+            return {"message": "Career path saved successfully"}
+        except Exception as e:
+            print(f"Error: {e}")
+            raise HTTPException(status_code=500, detail=str(e))
 # from mangum import Mangum
 # handler = Mangum(app)
 
