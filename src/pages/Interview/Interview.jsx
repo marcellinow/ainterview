@@ -110,6 +110,7 @@ const Interview = () => {
       }
 
       const publicUrl = publicUrlData.publicUrl;
+      console.log("publicURL di Interview.jsx: ", { publicUrl });
 
       // Insert the file link into the database
       const { data: insertedData, error: insertError } = await supabase

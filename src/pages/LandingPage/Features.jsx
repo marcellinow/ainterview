@@ -1,15 +1,28 @@
 import React from "react";
 import "./Features.css";
-// import InterviewPic1 from "../assets/img/interview-pic1.png";
-// import InterviewPic2 from "../assets/img/interview-pic2.png";
+import InterviewPic1 from "../../assets/img/interview-pic1.png";
+import InterviewPic2 from "../../assets/img/interview-pic2.png";
+import Interview from "../Interview/Interview";
 
 const Features = ({ id }) => {
   return (
     <div className="Features">
+      {/* <div className="quote-section">
+        <p>We are</p>
+        <p>what we</p>
+        <p>repeatedly</p>
+        <p>do.</p>
+        <p>Excellence</p>
+        <p>then,</p>
+        <p>is not an</p>
+        <p>act,</p>
+        <p>but a</p>
+        <p>habit.</p>
+      </div> */}
       <div className="Features-Container" id="Features">
-        <div className="Quotes-Section"></div>
+        <div className="Quotes-Section">tes</div>
         <div className="Features1">
-          <div className="Features1-Left"></div>
+          <img src={InterviewPic1} className="Features1-Left"></img>
           <div className="Features1-Right">
             <p>Get a best personalized interview questions</p>
             <p>
@@ -20,7 +33,7 @@ const Features = ({ id }) => {
         </div>
         <div className="Features1-Right-Float"></div>
         <div className="Features1">
-          <div className="Features1-Left"></div>
+          <img src={InterviewPic2} className="Features1-Left"></img>
           <div className="Features1-Right">
             <p>Get a best personalized interview questions</p>
             <p>

@@ -22,7 +22,7 @@ app.add_middleware(
 # Define input model for CV Data
 class CVData(BaseModel):
     user_id: str
-    public_url: str
+    cv_link: str
 
 class CVResponse(BaseModel):
     user_id: str
@@ -61,6 +61,8 @@ def get_file_url(user_id: str):
 # Function to process the CV and extract text from the PDF
 def process_cv_file(file_url: str):
     response = requests.get(file_url)
+    print(f"Fetching file from {file_url} - Status code: {response.status_code}")
+    
     if response.status_code == 200:
         pdf_file = BytesIO(response.content)
         try:
@@ -71,6 +73,7 @@ def process_cv_file(file_url: str):
             raise HTTPException(status_code=500, detail=f"Failed to process PDF: {str(e)}")
     else:
         raise HTTPException(status_code=404, detail=f"Failed to fetch file: {response.status_code}")
+
 
 # Function to generate questions based on CV content
 def generate_questions(text: str):
@@ -99,7 +102,7 @@ def generate_questions(text: str):
 async def process_cv(cv_data: CVData):
     try:
         print(f"Received user_id: {cv_data.user_id}")
-        print(f"Received public_url: {cv_data.public_url}")
+        print(f"Received public_url: {cv_data.cv_link}")
 
         # Step 1: Check if the CV already exists for the user
         existing_cv = supabase.table('cv_upload').select('cv_link').eq('user_id', cv_data.user_id).execute()
@@ -107,24 +110,24 @@ async def process_cv(cv_data: CVData):
         if existing_cv.data:
             # Update the existing CV link
             print("apdet")
-            response = supabase.table('cv_upload').update({'cv_link': cv_data.public_url}).eq('user_id', cv_data.user_id).execute()
+            response = supabase.table('cv_upload').update({'cv_link': cv_data.cv_link}).eq('user_id', cv_data.user_id).execute()
             print(f"Updated CV link for user_id: {cv_data.user_id}")
         else:
             print("insert")
             # Insert a new CV link
-            response = supabase.table('cv_upload').insert({'user_id': cv_data.user_id, 'cv_link': cv_data.public_url}).execute()
+            response = supabase.table('cv_upload').insert({'user_id': cv_data.user_id, 'cv_link': cv_data.cv_link}).execute()
             print(f"Inserted new CV link for user_id: {cv_data.user_id}")
             
 
         # Step 2: Process CV file and extract text
         print("Processing CV file...")
-        cv_text = process_cv_file(cv_data.public_url)
-        # print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
+        cv_text = process_cv_file(cv_data.cv_link)
+        print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
 
         # Step 3: Generate questions
         print("Generating questions...")
         questions = generate_questions(cv_text)
-        # print(f"Questions generated: {questions}")
+        print(f"Questions generated: {questions}")
 
         return {"message": "Model processed successfully", "questions": questions}
     except Exception as e:

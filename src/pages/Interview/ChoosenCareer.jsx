@@ -17,7 +17,7 @@ const ChoosenCareer = () => {
     // Ambil `user_id` dan `cv_id` dari state lokasi (dikirim dari Interview.jsx)
     const user_id = location.state?.user_id || localStorage.getItem("user_id");
     const cv_id = location.state?.cv_id || localStorage.getItem("cv_id");
-    console.log("user id:", user_id);
+    console.log("user id di ChoosenCareer:", user_id);
     console.log("cv id:", cv_id);
     if (!user_id || !cv_id) {
       setError("User ID or CV ID not found. Please try again.");
@@ -43,7 +43,10 @@ const ChoosenCareer = () => {
 
       // Navigasi ke halaman StartQuestion
       navigate("/Questions/StartQuestion", {
-        state: { user_id: user_id, cv_id: cv_id },
+        state: {
+          user_id: user_id,
+          cv_id: cv_id,
+        },
       });
     } catch (err) {
       console.error("Error inserting career path:", err.message);

@@ -36,21 +36,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: black;
+  /* background-color: black; */
 }
 .Features1-Right {
   height: 80%;
   width: 65%;
   display: flex;
   flex-direction: column;
-  background-color: grey;
+  /* background-color: grey; */
   text-align: left;
   justify-content: flex-end;
 }
 .Features1-Right-Float {
   height: 30vh;
-  width: 70vw;
-  right: -35px;
+  width: 55vw;
+  right: 0px;
   top: 16%;
   position: absolute;
   display: flex;
