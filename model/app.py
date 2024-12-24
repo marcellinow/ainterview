@@ -103,7 +103,7 @@ async def process_cv(cv_data: CVData):
 
         # Step 1: Check if the CV already exists for the user
         existing_cv = supabase.table('cv_upload').select('cv_link').eq('user_id', cv_data.user_id).execute()
-        print(f"test {existing_cv.data}\n")
+        print(f"responses: {existing_cv}\n")
         if existing_cv.data:
             # Update the existing CV link
             print("apdet")
