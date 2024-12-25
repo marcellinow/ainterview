@@ -7,6 +7,7 @@ import fitz  # PyMuPDF
 import os
 from supabase import create_client, Client
 import spacy
+from datetime import datetime
 
 # FastAPI instance
 app = FastAPI()
@@ -27,18 +28,24 @@ class CVData(BaseModel):
 class CVResponse(BaseModel):
     user_id: str
     question_id: int
-    question: str
-    respones: str
+    response: str
 
 class CareerData(BaseModel):
     user_id: str
     career_path: str
     created_at: str
 
+class MultipleUserResponses(BaseModel):
+    user_id: str
+    responses: dict
+
 # Supabase URL and Key (make sure to set environment variables)
 url: str = os.environ.get("SUPABASE_URL", "https://ffqmshntftrbvolsudtt.supabase.co")
 key: str = os.environ.get("SUPABASE_ANON_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmcW1zaG50ZnRyYnZvbHN1ZHR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ2MDM3ODgsImV4cCI6MjA1MDE3OTc4OH0.29Slsj3k-osTaU3A8SwSQw8Suho0rJ-TXZjISum_Pjc")
 supabase: Client = create_client(url, key)
+
+# Temporary storage for user responses
+temporary_responses = {}
 
 # Function to fetch CV URL from Supabase
 def get_file_url(user_id: str):
@@ -74,7 +81,6 @@ def process_cv_file(file_url: str):
     else:
         raise HTTPException(status_code=404, detail=f"Failed to fetch file: {response.status_code}")
 
-
 # Function to generate questions based on CV content
 def generate_questions(text: str):
     nlp = spacy.load("en_core_web_lg")
@@ -97,7 +103,6 @@ def generate_questions(text: str):
     return questions
 
 # Endpoint to process CV and generate questions
-# Endpoint to process CV and generate questions
 @app.post("/process_cv/")
 async def process_cv(cv_data: CVData):
     try:
@@ -117,12 +122,11 @@ async def process_cv(cv_data: CVData):
             # Insert a new CV link
             response = supabase.table('cv_upload').insert({'user_id': cv_data.user_id, 'cv_link': cv_data.cv_link}).execute()
             print(f"Inserted new CV link for user_id: {cv_data.user_id}")
-            
 
         # Step 2: Process CV file and extract text
         print("Processing CV file...")
         cv_text = process_cv_file(cv_data.cv_link)
-        print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
+        # print(f"Extracted text: {cv_text[:100]}...")  # Log first 100 characters
 
         # Step 3: Generate questions
         print("Generating questions...")
@@ -139,45 +143,41 @@ async def save_response(response: CVResponse):
     try:
         print(f"Received user_id: {response.user_id}")
         print(f"Received question_id: {response.question_id}")
-        print(f"Received question: {response.question}")
-        print(f"Received response: {response.respones}")
+        print(f"Received response: {response.response}")
 
-        # Save response to Supabase
-        response_data = {
-            "user_id": response.user_id,
-            "question_id": response.question_id,
-            "question": response.question,
-            "response": response.respones
-        }
-        response = supabase.table('cv_responses').insert(response_data).execute()
-        print(f"Supabase response: {response}")
+        # Save response temporarily in memory
+        if response.user_id not in temporary_responses:
+            temporary_responses[response.user_id] = {}
+        temporary_responses[response.user_id][response.question_id] = response.response
 
-        return {"message": "Response saved successfully"}
+        print(f"Temporary responses: {temporary_responses}")
+
+        return {"message": "Response saved temporarily"}
     except Exception as e:
         print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/save_career/")
-async def save_career(career_data:CareerData):
-        try:
-            print(f"Received user_id: {career_data.user_id}")
-            print(f"Received career_path: {career_data.career_path}")
-            print(f"Received created_at: {career_data.created_at}")
-    
-            # Save career data to Supabase
-            career_data = {
-                "user_id": career_data.user_id,
-                "career_path": career_data.career_path,
-                "created_at": career_data.created_at
-            }
-            response = supabase.table('user_career').insert(career_data).execute()
-            print(f"Supabase response: {response}")
-    
-            return {"message": "Career path saved successfully"}
-        except Exception as e:
-            print(f"Error: {e}")
-            raise HTTPException(status_code=500, detail=str(e))
-# from mangum import Mangum
-# handler = Mangum(app)
+async def save_career(career_data: CareerData):
+    try:
+        print(f"Received user_id: {career_data.user_id}")
+        print(f"Received career_path: {career_data.career_path}")
+        print(f"Received created_at: {career_data.created_at}")
+
+        # Save career data to Supabase
+        career_data = {
+            "user_id": career_data.user_id,
+            "career_path": career_data.career_path,
+            "created_at": career_data.created_at
+        }
+        response = supabase.table('user_career').insert(career_data).execute()
+        print(f"Supabase response: {response}")
+
+        return {"message": "Career path saved successfully"}
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Run the FastAPI app with Uvicorn
 if __name__ == "__main__":

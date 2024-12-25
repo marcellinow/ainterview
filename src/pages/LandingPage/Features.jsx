@@ -20,25 +20,35 @@ const Features = ({ id }) => {
         <p>habit.</p>
       </div> */}
       <div className="Features-Container" id="Features">
-        <div className="Quotes-Section">tes</div>
+        <div className="Quotes-Section">
+          We are what we repeatedly do. Excellence then, is not an act, but a
+          habit.
+        </div>
         <div className="Features1">
           <img src={InterviewPic1} className="Features1-Left"></img>
           <div className="Features1-Right">
-            <p>Get a best personalized interview questions</p>
+            <p className="Title">Get a best personalized interview questions</p>
             <p>
               with our best AI model, we help you get a best experiences you
               have ever had
             </p>
           </div>
         </div>
-        <div className="Features1-Right-Float"></div>
+        <div className="Features1-Right-Float">
+          <p>
+            Understand yourself thoroughly by the questions Give the best
+            impression by having best practice
+          </p>
+        </div>
         <div className="Features1">
           <img src={InterviewPic2} className="Features1-Left"></img>
           <div className="Features1-Right">
-            <p>Get a best personalized interview questions</p>
+            <p className="Title">
+              Clueless your blind spot? We are here to help
+            </p>
             <p>
-              with our best AI model, we help you get a best experiences you
-              have ever had
+              with data insight you will get after finishing the interview, it
+              helps you understand where are you in industrial
             </p>
           </div>
         </div>
@@ -49,67 +59,4 @@ const Features = ({ id }) => {
     </div>
   );
 };
-// <div className="features" id={id}>
-//   <div className="quote-section">
-//     <p>We are</p>
-//     <p>what we</p>
-//     <p>repeatedly</p>
-//     <p>do.</p>
-//     <p>Excellence</p>
-//     <p>then,</p>
-//     <p>is not an</p>
-//     <p>act,</p>
-//     <p>but a</p>
-//     <p>habit.</p>
-//   </div>
-
-//   <div className="feature-content-wrapper">
-//     <div className="feature-container">
-//       <div className="feature-left">
-//         <img
-//           src={InterviewPic1}
-//           alt="Interview preparation"
-//           className="feature-image"
-//         />
-//       </div>
-
-//       <div className="feature-right">
-//         <div className="purple-box">
-//           <h3>Understand yourself thoroughly by the questions</h3>
-//         </div>
-//         <div className="purple-box">
-//           <h3>Give the best impression by having best practice</h3>
-//         </div>
-//         <div className="feature-text">
-//           <h4>Get a best personalized interview questions</h4>
-//           <p>
-//             with our best AI model, we help you get best experiences you
-//             have ever had
-//           </p>
-//         </div>
-//       </div>
-//     </div>
-
-//     <div className="feature-container">
-//       <div className="feature-left">
-//         <img
-//           src={InterviewPic2}
-//           alt="Data insights"
-//           className="feature-image"
-//         />
-//       </div>
-
-//       <div className="feature-right">
-//         <div className="purple-box">
-//           <h3>Clueless your blind spot? We are here to help</h3>
-//         </div>
-//         <p>
-//           with data insight you will get after finishing the interview, it
-//           helps you understand where are you in industrial
-//         </p>
-//       </div>
-//     </div>
-//   </div>
-// </div>
-
 export default Features;

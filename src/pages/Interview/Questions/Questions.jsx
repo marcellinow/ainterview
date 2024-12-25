@@ -7,6 +7,7 @@ export default function Questions() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [response, setResponse] = useState("");
+  const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { id } = useParams();
@@ -60,6 +61,7 @@ export default function Questions() {
           const questionIndex = parseInt(id, 10) - 1;
           if (questionIndex >= 0 && questionIndex < data.questions.length) {
             setCurrentQuestion(data.questions[questionIndex]);
+            setResponse(responses[id] || ""); // Set response to saved response or empty
           } else {
             setError("Invalid question ID");
           }
@@ -76,7 +78,35 @@ export default function Questions() {
     fetchQuestions();
   }, [id, location.state]);
 
-  const handleNext = () => {
+  const saveResponse = async (questionId, responseText) => {
+    const user_id = location.state?.user_id || localStorage.getItem("user_id");
+
+    try {
+      const response = await fetch("http://localhost:8000/save_response/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user_id,
+          question_id: questionId,
+          response: responseText,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save response");
+      }
+
+      console.log("Response saved successfully");
+    } catch (error) {
+      console.error("Error saving response:", error);
+    }
+  };
+
+  const handleNext = async () => {
+    await saveResponse(parseInt(id, 10), response);
+
     const nextId = parseInt(id, 10) + 1;
     if (nextId <= questions.length) {
       navigate(`/Questions/Questions/${nextId}`, {
@@ -90,7 +120,9 @@ export default function Questions() {
     }
   };
 
-  const handlePrevious = () => {
+  const handlePrevious = async () => {
+    await saveResponse(parseInt(id, 10), response);
+
     const prevId = parseInt(id, 10) - 1;
     if (prevId >= 1) {
       navigate(`/Questions/Questions/${prevId}`, {
@@ -103,8 +135,42 @@ export default function Questions() {
   };
 
   const handleFinish = async () => {
-    await saveResponse();
+    await saveResponse(parseInt(id, 10), response);
+    await saveAllResponses(responses);
     navigate("/Questions/EndQuestion");
+  };
+
+  const handleResponseChange = (e) => {
+    setResponse(e.target.value);
+    setResponses({
+      ...responses,
+      [id]: e.target.value,
+    });
+  };
+
+  const saveAllResponses = async (responses) => {
+    const user_id = location.state?.user_id || localStorage.getItem("user_id");
+
+    try {
+      const response = await fetch("http://localhost:8000/save_responses/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: user_id,
+          responses: responses,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save all responses");
+      }
+
+      console.log("All responses saved successfully");
+    } catch (error) {
+      console.error("Error saving all responses:", error);
+    }
   };
 
   if (loading) return <div className="text-center">Loading questions...</div>;
@@ -120,7 +186,7 @@ export default function Questions() {
         <textarea
           placeholder="Your response..."
           value={response}
-          onChange={(e) => setResponse(e.target.value)}
+          onChange={handleResponseChange}
           className="textarea"
         />
         <div className="button-group">
