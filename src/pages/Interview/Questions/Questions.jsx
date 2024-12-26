@@ -76,7 +76,7 @@ export default function Questions() {
     };
 
     fetchQuestions();
-  }, [id, location.state]);
+  }, [id, location.state]); // Remove `responses` from dependency array
 
   const saveResponse = async (questionId, responseText) => {
     const user_id = location.state?.user_id || localStorage.getItem("user_id");

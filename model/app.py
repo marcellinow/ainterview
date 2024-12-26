@@ -178,7 +178,30 @@ async def save_career(career_data: CareerData):
     except Exception as e:
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+@app.post("/save_responses/")
+async def save_responses(multiple_user_responses: MultipleUserResponses):
+    try:
+        print(f"Received data: {multiple_user_responses}")
+        user_id = multiple_user_responses.user_id
+        if user_id not in temporary_responses:
+            raise HTTPException(status_code=404, detail="No temporary responses found for the user")
 
+        # Insert multiple user responses into the database
+        for question_id, response in temporary_responses[user_id].items():
+            supabase.table('user_responses').insert({
+                "user_id": user_id,
+                "question_id": int(question_id),
+                "response": response,
+                "created_at": datetime.utcnow().isoformat()  # Convert datetime to string
+            }).execute()
+
+        # Clear temporary responses after saving to database
+        del temporary_responses[user_id]
+
+        return {"message": "Responses saved successfully"}
+    except Exception as e:
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 # Run the FastAPI app with Uvicorn
 if __name__ == "__main__":
     import uvicorn
